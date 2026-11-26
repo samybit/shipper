@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
+import Link from "next/link";
 
 export default function Contact() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
-  const handleSubmit = async (e: FormDataEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSending(true);
     // No backend wired yet — simulate a send.
@@ -26,12 +27,12 @@ export default function Contact() {
             <p className="text-lg text-zinc-400 mb-8">
               Thanks — we&apos;ll get back to you soon.
             </p>
-            <a
+            <Link
               href="/"
               className="inline-flex items-center gap-2 text-xs font-mono font-medium text-white uppercase tracking-widest hover:text-zinc-400 transition-colors"
             >
               Back to work <span aria-hidden="true">→</span>
-            </a>
+            </Link>
           </div>
         </main>
       </div>
