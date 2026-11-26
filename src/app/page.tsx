@@ -109,6 +109,20 @@ export default function Home() {
           <div className="credit-final-frame"><div className="image-caption">THE STORY CONTINUES <span>DN—PRD</span></div></div>
           <div className="closing-line"><span>MAKE SOMETHING<br />THAT STAYS WITH YOU.</span><Link href="/contact">START A PROJECT ↗</Link></div>
         </section>
+        <nav className="film-navigation" aria-label="More films">
+          <Link href="#project-reel" className="film-nav-card film-nav-card--prev">
+            <span className="film-nav-image" />
+            <span className="film-nav-word">PREV</span>
+            <span className="film-nav-corners" />
+            <span className="film-nav-caption">PREVIOUS FILM <b>←</b></span>
+          </Link>
+          <Link href="/archive" className="film-nav-card film-nav-card--next">
+            <span className="film-nav-image" />
+            <span className="film-nav-word">NEXT</span>
+            <span className="film-nav-corners" />
+            <span className="film-nav-caption">EXPLORE ARCHIVE <b>→</b></span>
+          </Link>
+        </nav>
       </main>
     </>
   );

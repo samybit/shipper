@@ -1,57 +1,80 @@
-import VideoCard from "@/components/video-card";
+"use client";
 
-interface Project {
-  id: string;
-  label: string;
-  title: string;
-  color: string;
-}
+import { useMemo, useState } from "react";
 
-const poster = (color: string, text: string) =>
-  `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450'%3E%3Crect width='800' height='450' fill='%23${color}'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-family='monospace' font-size='24' letter-spacing='2' opacity='0.45'%3E${text}%3C/text%3E%3C/svg%3E`;
+type Kind = "Music" | "Commercial";
+type ArchiveProject = { title: string; artist: string; duration: string; kind: Kind };
 
-const projects: Project[] = [
-  { id: "a1", label: "Digital", title: "Ice Man", color: "0a0a0a" },
-  { id: "a2", label: "Digital", title: "Central Cee", color: "111111" },
-  { id: "a3", label: "Music Video", title: "Night Drive", color: "1a1a1a" },
-  { id: "a4", label: "Commercial", title: "Studio Session", color: "0f0f0f" },
-  { id: "a5", label: "Documentary", title: "On the Road", color: "141414" },
-  { id: "a6", label: "Digital", title: "After Hours", color: "0b0b0b" },
-  { id: "a7", label: "Music Video", title: "Neon Nights", color: "121212" },
-  { id: "a8", label: "Commercial", title: "Summer Drop", color: "0c0c0c" },
-  { id: "a9", label: "Documentary", title: "Behind the Lens", color: "161616" },
-  { id: "a10", label: "Digital", title: "City Lights", color: "0e0e0e" },
-  { id: "a11", label: "Music Video", title: "Static", color: "131313" },
-  { id: "a12", label: "Commercial", title: "Launch", color: "0d0d0d" },
+const projects: ArchiveProject[] = [
+  { title: "Iceman", artist: "Central Cee", duration: "03:06", kind: "Music" },
+  { title: "Villains", artist: "Trapstar", duration: "01:27", kind: "Music" },
+  { title: "Aura for Aura", artist: "Blaqbonez", duration: "02:06", kind: "Music" },
+  { title: "No Comment", artist: "Fredo", duration: "03:01", kind: "Music" },
+  { title: "Trilogy", artist: "Kidwild", duration: "06:49", kind: "Music" },
+  { title: "Pilates", artist: "Kairo Keyz", duration: "03:23", kind: "Music" },
+  { title: "Century", artist: "Esdeekid", duration: "01:50", kind: "Music" },
+  { title: "Birthday", artist: "Fredo", duration: "02:46", kind: "Music" },
+  { title: "Son", artist: "Headie One", duration: "00:57", kind: "Music" },
+  { title: "Bellingham", artist: "Headie One", duration: "02:41", kind: "Music" },
+  { title: "Eight PM", artist: "Nemzzz", duration: "02:41", kind: "Music" },
+  { title: "Geekin", artist: "Nafe Smallz", duration: "02:49", kind: "Music" },
+  { title: "Cold", artist: "Nemzzz", duration: "02:23", kind: "Music" },
+  { title: "Hooligan", artist: "Rushy", duration: "02:34", kind: "Music" },
+  { title: "Iiatstu", artist: "Malevolence", duration: "06:19", kind: "Music" },
+  { title: "No Introduction", artist: "Central Cee", duration: "02:54", kind: "Music" },
+  { title: "Digos", artist: "Shiva", duration: "02:28", kind: "Music" },
+  { title: "Sombrero", artist: "Blanco", duration: "03:35", kind: "Music" },
+  { title: "Time Flies", artist: "Unknown T", duration: "03:23", kind: "Music" },
+  { title: "Take What’s Yours", artist: "TwoTone", duration: "02:02", kind: "Music" },
+  { title: "Whole Lotta", artist: "Valiant", duration: "02:45", kind: "Music" },
+  { title: "Figura Publica", artist: "Veigh", duration: "02:18", kind: "Music" },
+  { title: "Moi", artist: "Central Cee", duration: "02:55", kind: "Music" },
+  { title: "Tipsy", artist: "Headie One", duration: "02:49", kind: "Music" },
+  { title: "I Know", artist: "LeoStayTrill", duration: "02:15", kind: "Music" },
+  { title: "L’s", artist: "Nemzzz", duration: "02:01", kind: "Music" },
+  { title: "It’s Us", artist: "Nemzzz", duration: "01:58", kind: "Music" },
+  { title: "PTSD", artist: "Nemzzz", duration: "02:15", kind: "Commercial" },
+  { title: "Evicted", artist: "Nemzzz", duration: "02:41", kind: "Commercial" },
 ];
 
-export default function Archive() {
-  return (
-    <div className="flex flex-col flex-1">
-      <main className="flex-1 w-full pt-20 pb-32 px-6 md:pt-32 md:pb-40 md:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-16 gap-4">
-            <h1 className="text-6xl md:text-8xl font-black font-stretched tracking-tighter leading-none">
-              Archive
-            </h1>
-            <span className="text-xs font-mono font-medium text-zinc-600 uppercase tracking-widest">
-              {projects.length} projects
-            </span>
-          </div>
+const filters = ["All", "Music", "Commercial"] as const;
+type Filter = (typeof filters)[number];
 
-          <div className="grid grid-cols-1 gap-y-16 sm:grid-cols-2 lg:grid-cols-3 gap-x-8">
-            {projects.map((project) => (
-              <VideoCard
-                key={project.id}
-                src="#"
-                poster={poster(project.color, project.title.toUpperCase())}
-                label={project.label}
-                title={project.title}
-              />
-            ))}
-          </div>
+export default function Archive() {
+  const [filter, setFilter] = useState<Filter>("All");
+  const [selected, setSelected] = useState(0);
+  const visible = useMemo(() => projects.map((project, index) => ({ ...project, index })).filter((project) => filter === "All" || project.kind === filter), [filter]);
+  const active = projects[selected];
+
+  return (
+    <main className="archive-page">
+      <div className="archive-heading"><span>DN—PRD / FILM INDEX</span><span>SELECT A FILM TO PREVIEW</span></div>
+      <div className="archive-columns" aria-hidden="true"><span>PROJECT</span><span>ARTIST</span><span>RUNTIME</span></div>
+      <div className="archive-layout">
+        <div className="archive-table" role="list" aria-label="Film archive">
+          {visible.map((project) => (
+            <button className={`archive-row${selected === project.index ? " archive-row--active" : ""}`} key={project.title} role="listitem" onMouseEnter={() => setSelected(project.index)} onFocus={() => setSelected(project.index)} onClick={() => setSelected(project.index)}>
+              <span className="archive-title"><i>[{String(project.index + 1).padStart(2, "0")}]</i>{project.title}</span>
+              <span className="archive-artist">{project.artist}</span>
+              <span className="archive-runtime">{project.duration}</span>
+            </button>
+          ))}
         </div>
-      </main>
-    </div>
+        <div className={`archive-preview archive-preview--${selected % 4}`} aria-label={`Preview artwork for ${active.title}`}>
+          <div className="archive-preview-frame" />
+          <div className="archive-preview-top"><span>{String(selected + 1).padStart(2, "0")} / 29</span><span>{active.duration}</span></div>
+          <div className="archive-preview-title"><span>{active.title}</span><i>▶</i></div>
+          <div className="archive-preview-bottom"><span>{active.artist}</span><span>{active.kind.toUpperCase()}</span></div>
+        </div>
+      </div>
+      <div className="archive-filters" aria-label="Filter archive">
+        {filters.map((item) => (
+          <button key={item} className={filter === item ? "archive-filter--active" : ""} onClick={() => setFilter(item)}>
+            {item} <span>[{item === "All" ? "29" : item === "Music" ? "27" : "02"}]</span>
+          </button>
+        ))}
+      </div>
+      <div className="archive-colour-dot" aria-hidden="true"><i /><i /><i /></div>
+    </main>
   );
 }
